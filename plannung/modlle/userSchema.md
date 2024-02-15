@@ -1,7 +1,7 @@
 # Schema Modelle
 //------------------------------------------------------------------------------
 ### UserSchema
-
+// -----------------------
 #### Require
 - email (unique)
 - username (unique)
@@ -13,7 +13,7 @@
 - first name 
 - last name
 - gender
-- blocked User
+- blocked User (boolean)
 - birthday [date]
 - since [date]
 - come from
@@ -35,3 +35,11 @@
 - id
 - JWT Token
 - Session Cookies?
+
+// -----------------------
+
+
+
+
+ ### groupsDB
+ 
