@@ -3,7 +3,7 @@
 
 ### groupsSchema
 
-- [] gruppe erstelln
+- [] gruppe erstellen
     - foto
     - name
     - beschreibung
@@ -13,10 +13,19 @@
 
 - [] gruppen seite übersicht
     - deine gruppen
+        - foto
+        - name
+        - ort
+        - private (boolean)
         - anzahl der mitglieder
         - letzte aktivität (zeitpunkt)
         - beitreten (boolean)
-    - andere gruppen
+    
+    - andere gruppen   
+        - foto
+        - name
+        - ort
+        - private (boolean)
         - anzahl der mitglieder
         - letzte aktivität (zeitpunkt)
         - beitreten (boolean)
