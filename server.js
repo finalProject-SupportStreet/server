@@ -2,9 +2,10 @@ import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
 import morgan from "morgan";
-import session from "express-session";
+// import session from "express-session";
+import userRouter from "./routes/userRouter.js";
 
-import userRouter from "./routes/user.js";
+//import userRouter from "./routes/user.js";
 
 const app = express();
 
@@ -30,3 +31,18 @@ mongoose.connection.on("error", () =>
 app.use(cors()); //! muss noch mit dem Client abgestimmt werden
 app.use(morgan("dev"));
 app.use(express.json());
+
+/******************************************************
+ * API
+ * ******************************************************/
+
+app.use("/", userRouter);
+// app.use("/", tokenVerify, userRouter);
+
+/******************************************************
+ *   Server starten
+ * ******************************************************/
+
+app.listen(5500, () => {
+  console.log("Server läuft auf Port 5500");
+});
