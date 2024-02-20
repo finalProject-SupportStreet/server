@@ -2,6 +2,7 @@ import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
 import morgan from "morgan";
+import cookieParser from "cookie-parser";
 // import session from "express-session";
 import userRouter from "./routes/userRouter.js";
 
@@ -30,6 +31,7 @@ mongoose.connection.on("error", () =>
 
 app.use(cors()); //! muss noch mit dem Client abgestimmt werden
 app.use(morgan("dev"));
+app.use(cookieParser());
 app.use(express.json());
 
 /******************************************************

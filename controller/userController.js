@@ -1,7 +1,7 @@
 import UserModell from "../models/userSchema.js";
 import bcrypt from "bcrypt";
 import { generateToken } from "./jwtController.js";
-import e from "express";
+import jwt from "jsonwebtoken"; // npm install jsonwebtoken
 
 /******************************************************
  *    registerController
@@ -61,19 +61,21 @@ export const loginController = async (req, res, next) => {
       throw error;
     }
 
-    // Benutzerobjekt in ein normales Objekt umwandeln und das Passwort daraus löschen
-    const userObj = user.toObject();
-    delete userObj.password;
+    // Hier das `user`-Objekt  festlegen, bevor es in das JWT eingefügt wird
+    const userForJwt = {
+      _id: user._id,
+      username: user.username,
+    };
 
-    // JWT generieren
-    const token = generateToken(userObj);
-    console.log("TEST TOKEN", token);
+    // Generiere ein JWT mit dem `userForJwt`-Objekt als Payload
+    const accessToken = jwt.sign({ user: userForJwt }, process.env.JWT_SECRET);
 
-    // Benutzer zum req-Objekt hinzufügen
-    req.user = userObj;
-    console.log("req.user", req.user);
-    // Token als Antwort zurück geben
-    res.status(200).send({ message: "User successfully logged in", token });
+    // 2. sende es als cookie zurück an den client
+    res
+      .cookie("token", accessToken, {
+        httpOnly: true, // Der Cookie kann nicht durch javascript im client ausgelesen werden. Der server und browser schicken ihn nur per http hin und zurück. Das ist eine Sicherheitsmaßnahme.
+      })
+      .send("cookie wurde gesetzt");
   } catch (error) {
     next(error);
   }
@@ -82,10 +84,11 @@ export const loginController = async (req, res, next) => {
 /******************************************************
  *    logoutController
  ******************************************************/
-//* muss hier noch ein JWT Token gelöscht werden?
+//! muss hier noch ein JWT Token gelöscht werden?
 
-export const logoutController = async (req, res, next) => {
-  res.status(200).json({ message: "Logout erfolgreich" });
+export const logoutController = async (req, res) => {
+  res.clearCookie("token");
+  res.status(200).send("cookie cleared. User logged out.");
 };
 
 /******************************************************
@@ -148,10 +151,10 @@ export const editUser = async (req, res, next) => {
 
     await user.save();
 
-    res.status(200).json({ message: "User successfully edited", user });
+    res.status(200).send({ message: "User successfully edited", user });
   } catch (error) {
     console.error("Error editing user:", error);
-    res.status(error.status || 500).json({ message: error.message });
+    res.status(error.status || 500).send({ message: error.message });
   }
 };
 
@@ -163,7 +166,7 @@ export const deleteUser = async (req, res, next) => {
   try {
     const userId = req.params.id;
     await UserModell.findByIdAndDelete(userId);
-    res.status(200).json({ message: "User successfully deleted" });
+    res.status(200).send({ message: "User successfully deleted" });
   } catch (error) {
     next(error);
   }

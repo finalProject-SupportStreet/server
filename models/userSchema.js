@@ -28,5 +28,5 @@ const userSchema = new Schema({
   organizing: [{ type: String }],
 });
 
-const UserModell = model("User", userSchema);
+const UserModell = model("User", userSchema, "users");
 export default UserModell;
