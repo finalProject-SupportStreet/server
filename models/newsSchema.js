@@ -1,8 +1,10 @@
+import mongoose from "mongoose";
 import { Schema, model } from "mongoose";
 
 const newsSchema = new Schema({
   title: { type: String, required: true },
   text: { type: String, required: true },
+  tags: [{ type: String, required: true }],
   creator: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",

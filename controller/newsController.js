@@ -1,5 +1,4 @@
-// import { getNews, getNewsById, createNews, updateNews, deleteNews } from '../controller/newsController.js';
-
+import jwt from "jsonwebtoken";
 import NewsModell from "../models/newsSchema.js";
 
 /******************************************************
@@ -10,7 +9,7 @@ export const createNews = async (req, res, next) => {
   try {
     // Überprüfe, ob der JWT-Token im Cookie vorhanden ist
     const token = req.cookies.token;
-    console.log("token createNews Controller", token);
+    console.log("token createNews", token);
     if (!token) {
       const error = new Error(
         "Authorization failed: JWT token not found in cookie"
@@ -29,7 +28,7 @@ export const createNews = async (req, res, next) => {
     const { title, text } = req.body;
 
     // Erstelle den News-Eintrag unter Verwendung der Benutzer-ID als Schöpfer
-    const news = new NewsModel({
+    const news = new NewsModell({
       title,
       text,
       creator: creatorId,
@@ -52,7 +51,61 @@ export const createNews = async (req, res, next) => {
 export const getNews = async (req, res, next) => {
   try {
     const news = await NewsModell.find();
+    console.log("news", news);
     res.status(200).send(news);
+  } catch (error) {
+    next(error);
+  }
+};
+
+// interessen (obj) ->
+
+const obj = {
+  tags: [string]
+  follow: [id]}
+  find({tag : "vegan"})
+/******************************************************
+ *    getNewsByCreatorId
+ ******************************************************/
+
+export const getNewsByCreatorId = async (req, res, next) => {
+  try {
+    const creatorId = req.params.id;
+    console.log("creatorId", creatorId);
+    const news = await NewsModell.find({ creator: creatorId });
+    res.status(200).send(news);
+  } catch (error) {
+    next(error);
+  }
+};
+
+/******************************************************
+ *    updateNews
+ ******************************************************/
+export const updateNews = async (req, res, next) => {
+  try {
+    const newsId = req.params.id;
+    const { title, text } = req.body;
+    const news = await NewsModell.findById({ _id: newsId });
+    news.title = title;
+    news.text = text;
+    await news.save();
+    res.status(200).send(news);
+  } catch (error) {
+    next(error);
+  }
+};
+
+/******************************************************
+ *    deleteNews
+ ******************************************************/
+
+export const deleteNews = async (req, res, next) => {
+  try {
+    const newsId = req.params.id;
+
+    await NewsModell.findByIdAndDelete(newsId);
+    res.status(200).send({ message: "News successfully deleted" });
   } catch (error) {
     next(error);
   }

@@ -5,6 +5,7 @@ import morgan from "morgan";
 import cookieParser from "cookie-parser";
 // import session from "express-session";
 import userRouter from "./routes/userRouter.js";
+import newsRouter from "./routes/newsRouter.js";
 
 //import userRouter from "./routes/user.js";
 
@@ -39,7 +40,7 @@ app.use(express.json());
  * ******************************************************/
 
 app.use("/", userRouter);
-// app.use("/", tokenVerify, userRouter);
+app.use("/", newsRouter);
 
 /******************************************************
  *   Server starten
