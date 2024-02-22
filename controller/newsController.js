@@ -89,12 +89,7 @@ export const getFeed = async (req, res, next) => {
   }
 };
 
-// interessen (obj) ->
 
-/* const obj = {
-  tags: [string]
-  follow: [id]}
-  find({tag : "vegan"}) */
 /******************************************************
  *    getNewsByCreatorId
  ******************************************************/

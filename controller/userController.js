@@ -87,13 +87,19 @@ export const loginController = async (req, res, next) => {
 
     // Generiere ein JWT mit dem `userForJwt`-Objekt als Payload
     const accessToken = jwt.sign({ user: userForJwt }, process.env.JWT_SECRET);
-
+    
+    console.log(accessToken);
     // 2. sende es als cookie zurück an den client
     res
       .cookie("token", accessToken, {
         httpOnly: true, // Der Cookie kann nicht durch javascript im client ausgelesen werden. Der server und browser schicken ihn nur per http hin und zurück. Das ist eine Sicherheitsmaßnahme.
+
+        secure: process.env.NODE_ENV === "production",
+        sameSite: process.env.NODE_ENV === "production" ? "None" : "lax",
       })
+
       .send({ msg: "cookie wurde gesetzt" });
+
   } catch (error) {
     next(error);
   }
@@ -105,6 +111,7 @@ export const loginController = async (req, res, next) => {
 //! muss hier noch ein JWT Token gelöscht werden?
 
 export const logoutController = async (req, res) => {
+  console.log("user ausgelogt");
   res.clearCookie("token");
   res.status(200).send("cookie cleared. User logged out.");
 };

@@ -26,9 +26,11 @@ mongoose.connection.on("error", () =>
   console.log("Database connection error! ☹️❌")
 );
 
+app.set('trust proxy', 1);
 /******************************************************
  *    Middleware
  ******************************************************/
+
 
 app.use(
   cors({
@@ -36,6 +38,7 @@ app.use(
     credentials: true, // erlaube Cookie-Austausch
   })
 );
+
 app.use(morgan("dev"));
 app.use(cookieParser());
 app.use(express.json());
