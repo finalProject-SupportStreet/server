@@ -2,18 +2,35 @@ import { Schema, model } from "mongoose";
 
 const userSchema = new Schema({
   email: { type: String, required: true, unique: true },
-  username: { type: String, required: true, unique: true },
-  plz: { type: String, required: true },
   password: { type: String, required: true },
-  firstName: { type: String },
+  confirmPassword: { type: String },
+  firstName: { type: String, required: true },
   lastName: { type: String },
+  address: [
+    {
+      plz: { type: String, required: true },
+      street: { type: String, required: true },
+      number: { type: String, required: true },
+    },
+  ],
   gender: { type: String },
   blockedUsers: [
     {
-      username: { type: String },
       id: { type: Schema.Types.ObjectId, ref: "User" },
     },
   ],
+  followUsers: [
+    {
+      id: { type: Schema.Types.ObjectId, ref: "User" },
+    },
+  ],
+  groups: [
+    {
+      groupName: { type: String },
+      groupId: { type: Schema.Types.ObjectId, ref: "Group" },
+    },
+  ],
+  interests: [{ type: String }],
   birthday: { type: Date },
   since: { type: Date },
   comeFrom: { type: String },
@@ -22,7 +39,6 @@ const userSchema = new Schema({
   pet: { type: String },
   job: { type: String },
   aboutMe: { type: String },
-  interests: [{ type: String }],
   offers: [{ type: String }],
   activities: [{ type: String }],
   organizing: [{ type: String }],
