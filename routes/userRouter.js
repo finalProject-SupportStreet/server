@@ -13,7 +13,8 @@ import {
 
 const userRouter = express.Router();
 
-// userRouter.get("/", getUsers);
+//! Wichtig: /delete/:id ist für news
+//!          /:id ist für user
 userRouter.post("/register", registerController);
 userRouter.post("/login", authenticateUser, loginController);
 userRouter.post("/logout", logoutController);

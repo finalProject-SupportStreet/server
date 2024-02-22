@@ -8,11 +8,11 @@ import jwt from "jsonwebtoken";
 
 export const authenticateUser = async (req, res, next) => {
   // 1. Extrahiere Benutzername und Passwort aus dem Anforderungskörper
-  const username = req.body.username;
+  const email = req.body.email;
   const password = req.body.password;
 
   // 2. Suche nach dem Benutzer mit dem angegebenen Benutzernamen in der Datenbank
-  const user = await UserModell.findOne({ username });
+  const user = await UserModell.findOne({ email });
 
   // 3. Wenn kein Benutzer mit dem angegebenen Benutzernamen gefunden wurde, sende einen Fehler zurück
   if (!user) {

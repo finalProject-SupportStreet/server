@@ -1,7 +1,7 @@
 import UserModell from "../models/userSchema.js";
 import bcrypt from "bcrypt";
 import { generateToken } from "./jwtController.js";
-import jwt from "jsonwebtoken"; // npm install jsonwebtoken
+import jwt from "jsonwebtoken";
 
 /******************************************************
  *    registerController
@@ -9,14 +9,27 @@ import jwt from "jsonwebtoken"; // npm install jsonwebtoken
 
 export const registerController = async (req, res) => {
   try {
-    const { email, username, plz, password, confirmPassword } = req.body;
+    const {
+      email,
+      password,
+      confirmPassword,
+      firstName,
+      address,
+      followUsers,
+      groups,
+    } = req.body;
 
     // Überprüfen, ob die E-Mail bereits existiert
-    const existingUser = await UserModell.findOne({ username });
+    const existingUser = await UserModell.findOne({ email });
     if (existingUser) {
       return res
         .status(409)
-        .send({ message: "Registration failed. Please try again." });
+        .send({ message: "Email already exists. Please try again." });
+    }
+
+    // Überprüfen, ob das Passwort und die Bestätigung übereinstimmen
+    if (password !== confirmPassword) {
+      return res.status(400).send({ message: "Passwords do not match" });
     }
 
     // Passwort hashen
@@ -25,9 +38,11 @@ export const registerController = async (req, res) => {
     // Benutzer erstellen und in die Datenbank speichern
     const newUser = await UserModell.create({
       email,
-      username,
-      plz,
+      firstName,
       password: hashedPassword,
+      address,
+      followUsers,
+      groups,
     });
 
     // Erfolgreiche Antwort senden
@@ -43,9 +58,12 @@ export const registerController = async (req, res) => {
  ******************************************************/
 
 export const loginController = async (req, res, next) => {
+  console.log("starte loginController");
   try {
-    const { username, password } = req.body;
-    const user = await UserModell.findOne({ username });
+    const { email, password } = req.body;
+
+    console.log("email", email, password);
+    const user = await UserModell.findOne({ email });
     console.log("user", user);
     if (!user) {
       const error = new Error("Invalid credentials code001");
@@ -64,7 +82,7 @@ export const loginController = async (req, res, next) => {
     // Hier das `user`-Objekt  festlegen, bevor es in das JWT eingefügt wird
     const userForJwt = {
       _id: user._id,
-      username: user.username,
+      email: user.email,
     };
 
     // Generiere ein JWT mit dem `userForJwt`-Objekt als Payload
@@ -79,7 +97,9 @@ export const loginController = async (req, res, next) => {
         secure: process.env.NODE_ENV === "production",
         sameSite: process.env.NODE_ENV === "production" ? "None" : "lax",
       })
-      .send({"msg": "cookie wurde gesetzt"});
+
+      .send({ msg: "cookie wurde gesetzt" });
+
   } catch (error) {
     next(error);
   }
@@ -113,9 +133,9 @@ export const editUser = async (req, res, next) => {
       error.statusCode = 404;
       throw error;
     }
+
     const {
       email,
-      username,
       plz,
       password,
       firstName,
@@ -132,12 +152,12 @@ export const editUser = async (req, res, next) => {
       offers,
       activities,
       organizing,
+      address,
     } = req.body;
 
     // Prüfe, ob ein Feld im Anfragekörper vorhanden ist und aktualisiere den Benutzer entsprechend
     if (email) user.email = email;
-    if (username) user.username = username;
-    if (plz) user.plz = plz;
+    if (plz) user.address[0].plz = plz;
     if (password) user.password = password;
     if (firstName) user.firstName = firstName;
     if (lastName) user.lastName = lastName;
@@ -153,6 +173,9 @@ export const editUser = async (req, res, next) => {
     if (offers) user.offers = offers;
     if (activities) user.activities = activities;
     if (organizing) user.organizing = organizing;
+    if (address) {
+      user.address = address; // Aktualisiere die Adresse
+    }
 
     await user.save();
 

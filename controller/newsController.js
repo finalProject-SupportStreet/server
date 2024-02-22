@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken";
 import NewsModell from "../models/newsSchema.js";
+import UserModell from "../models/userSchema.js";
 
 /******************************************************
  *    createNews
@@ -58,7 +59,36 @@ export const getNews = async (req, res, next) => {
   }
 };
 
-// interessen (obj) ->
+/******************************************************
+ *   getFeed
+ * ******************************************************/
+//! MARKTPLATZ UND GRUPPEN FEHLEN NOCH!!!
+export const getFeed = async (req, res, next) => {
+  try {
+    const userId = req.user._id;
+
+    const userNews = await UserModell.findById(userId);
+    const followUsers = user.followUsers.map(
+      (followUser) => followUser.username
+    );
+
+    // Finde die News der Benutzer, denen der aktuelle Benutzer folgt
+    const followUsersNews = await NewsModel.find({
+      creator: { $in: followUsers },
+    });
+
+    // Kombiniert News des Benutzers und seiner Freunde
+    const feed = [...userNews, ...followUsersNews];
+
+    // Sortiert News nach creationTime in absteigender Reihenfolge
+    feed.sort((a, b) => b.creationTime - a.creationTime);
+
+    res.status(200).send(feed);
+  } catch (error) {
+    next(error);
+  }
+};
+
 
 /******************************************************
  *    getNewsByCreatorId

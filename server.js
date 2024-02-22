@@ -31,10 +31,14 @@ app.set('trust proxy', 1);
  *    Middleware
  ******************************************************/
 
-app.use( cors({
-  origin: "http://localhost:5173", // URL unseres Frontends
-  credentials: true // erlaube Cookie-Austausch
-}) );//! muss noch mit dem Client abgestimmt werden
+
+app.use(
+  cors({
+    origin: "http://localhost:5173", // URL unseres Frontends
+    credentials: true, // erlaube Cookie-Austausch
+  })
+);
+
 app.use(morgan("dev"));
 app.use(cookieParser());
 app.use(express.json());
