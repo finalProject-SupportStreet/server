@@ -6,6 +6,7 @@ import cookieParser from "cookie-parser";
 // import session from "express-session";
 import userRouter from "./routes/userRouter.js";
 import newsRouter from "./routes/newsRouter.js";
+import groupsRouter from "./routes/groupsRouter.js";
 
 //import userRouter from "./routes/user.js";
 
@@ -26,11 +27,10 @@ mongoose.connection.on("error", () =>
   console.log("Database connection error! ☹️❌")
 );
 
-app.set('trust proxy', 1);
+app.set("trust proxy", 1);
 /******************************************************
  *    Middleware
  ******************************************************/
-
 
 app.use(
   cors({
@@ -49,6 +49,7 @@ app.use(express.json());
 
 app.use("/", userRouter);
 app.use("/", newsRouter);
+app.use("/", groupsRouter);
 
 /******************************************************
  *   Server starten

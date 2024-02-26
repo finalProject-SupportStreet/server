@@ -6,6 +6,7 @@ const userSchema = new Schema({
   confirmPassword: { type: String },
   firstName: { type: String, required: true },
   lastName: { type: String },
+  image: { type: String },
   address: [
     {
       plz: { type: String, required: true },

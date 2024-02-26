@@ -1,11 +1,15 @@
 import mongoose from "mongoose";
-import { Schema, model } from "mongoose";
+const { Schema, model } = mongoose;
 
-const newsSchema = new Schema({
+const groupPostSchema = new Schema({
   title: { type: String, required: true },
   text: { type: String, required: true },
   image: { type: String },
   tags: [{ type: String, required: true }],
+  privateGroup: { type: Boolean, default: false },
+  members: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+  mods: [{ type: Schema.Types.ObjectId, ref: "User" }],
+  admins: [{ type: Schema.Types.ObjectId, ref: "User" }],
   creator: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
@@ -15,6 +19,8 @@ const newsSchema = new Schema({
     type: Date,
     default: Date.now,
   },
+  image: { type: String },
+  likes: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
   comments: [
     {
       text: { type: String, required: true },
@@ -26,11 +32,7 @@ const newsSchema = new Schema({
       commentTime: { type: Date, default: Date.now },
     },
   ],
-  likes: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
 });
 
-//!  zu meinem feed gehören auch bilder! da diese aber seperat gespeichert werden (cloudinary) kann ich nix auf require setzen oder?
-// Mein feed soll nach erstellen des Posts geordnet werden.
-
-const NewsModell = model("News", newsSchema, "news");
-export default NewsModell;
+const GroupsModel = model("GroupPost", groupPostSchema, "groups");
+export default GroupsModel;

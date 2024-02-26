@@ -10,7 +10,7 @@ export const createNews = async (req, res, next) => {
   try {
     // Überprüfe, ob der JWT-Token im Cookie vorhanden ist
     const token = req.cookies.token;
-    console.log("token createNews", token);
+
     if (!token) {
       const error = new Error(
         "Authorization failed: JWT token not found in cookie"
@@ -88,7 +88,6 @@ export const getFeed = async (req, res, next) => {
     next(error);
   }
 };
-
 
 /******************************************************
  *    getNewsByCreatorId
