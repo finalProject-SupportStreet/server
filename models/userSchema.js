@@ -9,7 +9,7 @@ const userSchema = new Schema({
   image: { type: String },
   address: [
     {
-      plz: { type: String, required: true },
+      zip: { type: String, required: true },
       street: { type: String, required: true },
       number: { type: String, required: true },
     },
@@ -40,7 +40,7 @@ const userSchema = new Schema({
   pet: { type: String },
   job: { type: String },
   aboutMe: { type: String },
-  offers: [{ type: String }],
+  offers: [{ type: String }], // Was ich anbiete
   activities: [{ type: String }],
   organizing: [{ type: String }],
 });

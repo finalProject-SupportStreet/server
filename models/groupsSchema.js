@@ -19,7 +19,6 @@ const groupPostSchema = new Schema({
     type: Date,
     default: Date.now,
   },
-  image: { type: String },
   likes: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
   comments: [
     {

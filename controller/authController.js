@@ -42,7 +42,7 @@ export const authenticateUser = async (req, res, next) => {
 export const authorizeUser = (req, res, next) => {
   // 1. wir nehmen den jwt aus dem Request
   const token = req.cookies.token;
-  console.log("token authorizeUser", token);
+  console.log("token authorizeUser from cookie", token);
   // 2. Wenn es keinen token gibt, senden wir einen fehler zurück
   if (!token) return res.send("no cookie found. you are not authorized.");
   // 3. wenn es einen token gibt, versuchen wir ihn zu verifizieren
@@ -51,6 +51,7 @@ export const authorizeUser = (req, res, next) => {
     if (err) return res.send("falscher token");
     // wir wollen den user in der nächsten middleware verwenden.
     req.user = user;
+    console.log("req.user authController", user);
     // 5. wenn alles geklappt hat, führen wir next() aus.
     next();
   });
