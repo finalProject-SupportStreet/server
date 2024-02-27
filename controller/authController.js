@@ -16,7 +16,7 @@ export const authenticateUser = async (req, res, next) => {
 
   // 3. Wenn kein Benutzer mit dem angegebenen Benutzernamen gefunden wurde, sende einen Fehler zurück
   if (!user) {
-    const error = new Error("No user found with the provided username");
+    const error = new Error("User not found");
     error.statusCode = 401; // Unautorisiert
     throw error;
   }

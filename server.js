@@ -17,16 +17,16 @@ const app = express();
  *    Mit Mongoose verbinden
  ******************************************************/
 
+const { DB_USER, DB_PASS, DB_HOST, DB_NAME } = process.env;
+
+const URI = `mongodb+srv://${DB_USER}:${DB_PASS}@${DB_HOST}/${DB_NAME}?retryWrites=true&w=majority`;
+
 mongoose
-  .connect(
-    `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@${process.env.DB_HOST}/${process.env.DB_NAME}?retryWrites=true&w=majority`
-  )
+  .connect(URI)
   .then(() => console.log(`MongoDB connected`))
   .catch((error) => console.log(error, "Database did not connect! ☹️❌"));
 
-mongoose.connection.on("error", () =>
-  console.log("Database connection error! ☹️❌")
-);
+mongoose.connection.on("error", () => console.log);
 
 app.set("trust proxy", 1);
 /******************************************************
