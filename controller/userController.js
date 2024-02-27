@@ -29,7 +29,7 @@ export const registerController = async (req, res) => {
 
     // Überprüfen, ob das Passwort und die Bestätigung übereinstimmen
     if (password !== confirmPassword) {
-      return res.status(400).send({ message: "Passwords do not match" });
+      return res.status(400).send("Passwords do not match");
     }
 
     // Passwort hashen
@@ -80,14 +80,13 @@ export const loginController = async (req, res, next) => {
     }
 
     // Hier das `user`-Objekt  festlegen, bevor es in das JWT eingefügt wird
-    const userForJwt = {
-      _id: user._id,
-      email: user.email,
-    };
+    user.toObject();
+    delete user.password;
+    const userForJwt = user;
 
     // Generiere ein JWT mit dem `userForJwt`-Objekt als Payload
     const accessToken = jwt.sign({ user: userForJwt }, process.env.JWT_SECRET);
-    
+
     console.log(accessToken);
     // 2. sende es als cookie zurück an den client
     res
@@ -99,7 +98,6 @@ export const loginController = async (req, res, next) => {
       })
 
       .send({ msg: "cookie wurde gesetzt" });
-
   } catch (error) {
     next(error);
   }
@@ -177,6 +175,7 @@ export const editUser = async (req, res, next) => {
       user.address = address; // Aktualisiere die Adresse
     }
 
+    //! save ist veraltet -> create verwenden
     await user.save();
 
     res.status(200).send({ message: "User successfully edited", user });
