@@ -5,6 +5,7 @@ import {
   loginController,
   logoutController,
   registerController,
+  loadMapController
 } from "../controller/userController.js";
 import {
   authenticateUser,
@@ -12,6 +13,8 @@ import {
 } from "../controller/authController.js";
 
 const userRouter = express.Router();
+
+userRouter.get("/neighbours", authorizeUser, loadMapController)
 
 //! Wichtig: /delete/:id ist für news
 //!          /:id ist für user

@@ -58,13 +58,10 @@ export const registerController = async (req, res) => {
  ******************************************************/
 
 export const loginController = async (req, res, next) => {
-  console.log("starte loginController");
+
   try {
     const { email, password } = req.body;
-
-    console.log("email", email, password);
     const user = await UserModell.findOne({ email });
-    console.log("user", user);
     if (!user) {
       const error = new Error("Invalid credentials code001");
       error.statusCode = 401;
@@ -80,18 +77,18 @@ export const loginController = async (req, res, next) => {
     }
 
     // Hier das `user`-Objekt  festlegen, bevor es in das JWT eingefügt wird
-    const userForJwt = {
-      _id: user._id,
-      email: user.email,
-    };
+    user.toObject();
+    delete user.password; 
+    const userForJwt = user;
+
+
 
     // Generiere ein JWT mit dem `userForJwt`-Objekt als Payload
     const accessToken = jwt.sign({ user: userForJwt }, process.env.JWT_SECRET);
     
     console.log(accessToken);
     // 2. sende es als cookie zurück an den client
-    res
-      .cookie("token", accessToken, {
+    res.cookie("token", accessToken, {
         httpOnly: true, // Der Cookie kann nicht durch javascript im client ausgelesen werden. Der server und browser schicken ihn nur per http hin und zurück. Das ist eine Sicherheitsmaßnahme.
 
         secure: process.env.NODE_ENV === "production",
@@ -177,7 +174,7 @@ export const editUser = async (req, res, next) => {
       user.address = address; // Aktualisiere die Adresse
     }
 
-    await user.save();
+    await user.save(); //! await user.create() ???
 
     res.status(200).send({ message: "User successfully edited", user });
   } catch (error) {
@@ -199,3 +196,20 @@ export const deleteUser = async (req, res, next) => {
     next(error);
   }
 };
+
+
+export const loadMapController = async (req,res, next) => {
+  //TODO: WIE ADRESSE DES EINGELOGGTEN USERS HOLEN ?!
+  try {
+    const user = req.params.id;
+    const loggedInUser = await UserModell.findById({user})
+    if(!loggedInUser) {
+      res.status(500).send('User not found');
+    } 
+    res.send(loggedInUser);
+  } catch (err) {
+    console.log(err);
+  }
+
+
+}
