@@ -29,7 +29,7 @@ export const registerController = async (req, res) => {
 
     // Überprüfen, ob das Passwort und die Bestätigung übereinstimmen
     if (password !== confirmPassword) {
-      return res.status(400).send({ message: "Passwords do not match" });
+      return res.status(400).send("Passwords do not match");
     }
 
     // Passwort hashen

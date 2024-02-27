@@ -31,6 +31,11 @@ const userSchema = new Schema({
       groupId: { type: Schema.Types.ObjectId, ref: "Group" },
     },
   ],
+  marketItems: [
+    {
+      itemId: { type: Schema.Types.ObjectId, ref: "MarketItem" },
+    },
+  ],
   interests: [{ type: String }],
   birthday: { type: Date },
   since: { type: Date },

@@ -14,7 +14,7 @@ import {
 
 const groupsRouter = express.Router();
 
-groupsRouter.get("/getAllGroups", getAllGroups);
+groupsRouter.get("/getAllGroups", getAllGroups); // zum testen - später löschen falls nicht gebraucht
 groupsRouter.get("/getFollowedGroups", authorizeUser, getFollowedGroups);
 groupsRouter.get("/getFollowedGroups/:id", getFollowedGroupByUserId);
 groupsRouter.post("/createGroup", authorizeUser, createGroup);
