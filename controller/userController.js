@@ -175,6 +175,7 @@ export const editUser = async (req, res, next) => {
       user.address = address; // Aktualisiere die Adresse
     }
 
+    //! save ist veraltet -> create verwenden
     await user.save();
 
     res.status(200).send({ message: "User successfully edited", user });
