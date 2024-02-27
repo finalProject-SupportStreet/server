@@ -5,7 +5,7 @@
 
 - Angebot erstellen
     - typ
-    - Kategorie wählen
+    - Kategorie wählen (Tags)
 
 - Angebot Box 
     - foto
@@ -23,7 +23,7 @@
     - datum (zeit)
     - Ort
     - kontakt
-    - Interaktionen (merken, etc.)
+    - Interaktionen (merken (follow), etc.)
     - witere optionen
  
  // ------------------------#
