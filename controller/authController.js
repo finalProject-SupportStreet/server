@@ -8,8 +8,7 @@ import jwt from "jsonwebtoken";
 
 export const authenticateUser = async (req, res, next) => {
   // 1. Extrahiere Benutzername und Passwort aus dem Anforderungskörper
-  const email = req.body.email;
-  const password = req.body.password;
+  const { email, password } = req.body;
 
   // 2. Suche nach dem Benutzer mit dem angegebenen Benutzernamen in der Datenbank
   const user = await UserModell.findOne({ email });
@@ -51,7 +50,7 @@ export const authorizeUser = (req, res, next) => {
     if (err) return res.send("falscher token");
     // wir wollen den user in der nächsten middleware verwenden.
     req.user = user;
-    console.log("req.user authController", user);
+    // console.log("req.user authController", user);
     // 5. wenn alles geklappt hat, führen wir next() aus.
     next();
   });
