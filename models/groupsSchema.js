@@ -2,10 +2,10 @@ import mongoose from "mongoose";
 const { Schema, model } = mongoose;
 
 const groupPostSchema = new Schema({
-  title: { type: String, required: true },
+  title: { type: String, unique: true, required: true },
   text: { type: String, required: true },
   image: { type: String },
-  tags: [{ type: String, required: true }],
+  tags: { type: String, required: true },
   privateGroup: { type: Boolean, default: false },
   members: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
   mods: [{ type: Schema.Types.ObjectId, ref: "User" }],
