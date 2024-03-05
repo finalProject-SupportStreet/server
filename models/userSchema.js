@@ -5,7 +5,7 @@ const userSchema = new Schema({
   password: { type: String, required: true },
   confirmPassword: { type: String },
   firstName: { type: String, required: true },
-  lastName: { type: String },
+  lastName: { type: String, required: true },
   image: { type: String },
   address: [
     {
@@ -14,6 +14,7 @@ const userSchema = new Schema({
       number: { type: String, required: true },
     },
   ],
+  geoCode: [ String ], //* neu hinzugefügt!!!
   gender: { type: String },
   blockedUsers: [
     {
