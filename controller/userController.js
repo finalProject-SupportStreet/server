@@ -14,7 +14,9 @@ export const registerController = async (req, res) => {
       password,
       confirmPassword,
       firstName,
+      lastName,
       address,
+      geoCode,
       followUsers,
       groups,
     } = req.body;
@@ -39,8 +41,10 @@ export const registerController = async (req, res) => {
     const newUser = await UserModell.create({
       email,
       firstName,
+      lastName,
       password: hashedPassword,
       address,
+      geoCode,
       followUsers,
       groups,
     });
@@ -105,7 +109,7 @@ export const loginController = async (req, res, next) => {
 //! muss hier noch ein JWT Token gelöscht werden?
 
 export const logoutController = async (req, res) => {
-  console.log("user ausgelogt");
+  console.log("user ausgeloggt");
   res.clearCookie("token");
   res.status(200).send("cookie cleared. User logged out.");
 };
@@ -195,15 +199,25 @@ export const deleteUser = async (req, res, next) => {
   }
 };
 
-export const loadMapController = async (req, res, next) => {
-  //TODO: WIE ADRESSE DES EINGELOGGTEN USERS HOLEN ?!
+//done: userSchema erweitern -> geodata: String
+//done: Geodaten sollen in DB/LS gespeichert werden
+
+//todo: filtere alle User mit gleicher PLZ, dann filtere erneut, wer sich in der Umkreissuche befindet (Haversine formula -> calculates distances on geodata).
+
+export const neighbourController = async (req, res, next) => {
   try {
-    const user = req.params.id;
-    const loggedInUser = await UserModell.findById({ user });
-    if (!loggedInUser) {
-      res.status(500).send("User not found");
+    const { zip } = req.body;
+
+    //! 1) user mit gleicher Zip finden:
+    const zipNeighbours = await UserModell.find({ "address.zip": `${zip}` });
+    // const zipNeighboursPlainObj = zipNeighbours.toObject();
+    if (!zipNeighbours[0].address[0].zip === zip) {
+      res.send("No neighbours found in this zipcode area.");
     }
-    res.send(loggedInUser);
+
+    res.send({ zipNeighbours });
+
+    //! 2) User im Umkreis (variabel) finden:
   } catch (err) {
     console.log(err);
   }
