@@ -62,7 +62,6 @@ export const registerController = async (req, res) => {
  ******************************************************/
 
 export const loginController = async (req, res, next) => {
-
   try {
     const { email, password } = req.body;
     const user = await UserModell.findOne({ email });
@@ -80,26 +79,25 @@ export const loginController = async (req, res, next) => {
       throw error;
     }
 
-    // Hier das `user`-Objekt festlegen, bevor es in das JWT eingefügt wird
+    // Hier das `user`-Objekt  festlegen, bevor es in das JWT eingefügt wird
     const plainUserObj = user.toObject();
-    delete plainUserObj.password; 
+    delete plainUserObj.password;
     const userForJwt = plainUserObj;
-
 
     // Generiere ein JWT mit dem `userForJwt`-Objekt als Payload
     const accessToken = jwt.sign({ user: userForJwt }, process.env.JWT_SECRET);
 
     console.log(accessToken);
     // 2. sende es als cookie zurück an den client
-    res.cookie("token", accessToken, {
+    res
+      .cookie("token", accessToken, {
         httpOnly: true, // Der Cookie kann nicht durch javascript im client ausgelesen werden. Der server und browser schicken ihn nur per http hin und zurück. Das ist eine Sicherheitsmaßnahme.
 
         secure: process.env.NODE_ENV === "production",
         sameSite: process.env.NODE_ENV === "production" ? "None" : "lax",
       })
 
-      .send({user: plainUserObj});
-
+      .send({ user: plainUserObj });
   } catch (error) {
     next(error);
   }
@@ -177,10 +175,8 @@ export const editUser = async (req, res, next) => {
       user.address = address; // Aktualisiere die Adresse
     }
 
-
     //! save ist veraltet -> create verwenden
     await user.save();
-
 
     res.status(200).send({ message: "User successfully edited", user });
   } catch (error) {
@@ -204,31 +200,24 @@ export const deleteUser = async (req, res, next) => {
 };
 
 //done: userSchema erweitern -> geodata: String
-//done: Geodaten sollen in DB/LS gespeichert werden 
+//done: Geodaten sollen in DB/LS gespeichert werden
 
-//todo: filtere alle User mit gleicher PLZ, dann filtere erneut, wer sich in der Umkreissuche befindet (Haversine formula -> calculates distances on geodata). 
+//todo: filtere alle User mit gleicher PLZ, dann filtere erneut, wer sich in der Umkreissuche befindet (Haversine formula -> calculates distances on geodata).
 
-
-export const neighbourController = async (req,res, next) => {
-    
+export const neighbourController = async (req, res, next) => {
   try {
-
     const { zip } = req.body;
 
-
     //! 1) user mit gleicher Zip finden:
-    const zipNeighbours = await UserModell.find({'address.zip': `${zip}`});
+    const zipNeighbours = await UserModell.find({ "address.zip": `${zip}` });
     // const zipNeighboursPlainObj = zipNeighbours.toObject();
     if (!zipNeighbours[0].address[0].zip === zip) {
-      res.send('No neighbours found in this zipcode area.')
-    };
-    
-    res.send({zipNeighbours});
+      res.send("No neighbours found in this zipcode area.");
+    }
 
+    res.send({ zipNeighbours });
 
     //! 2) User im Umkreis (variabel) finden:
-
-
   } catch (err) {
     console.log(err);
   }

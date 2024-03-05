@@ -18,8 +18,8 @@ groupsRouter.get("/getAllGroups", getAllGroups); // zum testen - später lösche
 groupsRouter.get("/getFollowedGroups", authorizeUser, getFollowedGroups);
 groupsRouter.get("/getFollowedGroups/:id", getFollowedGroupByUserId);
 groupsRouter.post("/createGroup", authorizeUser, createGroup);
-groupsRouter.patch("/editGroup/:id", authorizeUser, editGroup);
 groupsRouter.post("/followGroup/:id", authorizeUser, followGroup);
+groupsRouter.patch("/editGroup/:id", authorizeUser, editGroup);
 groupsRouter.delete("/unfollowGroup/:id", authorizeUser, unfollowGroup);
 groupsRouter.delete("/deleteGroup/:id", authorizeUser, deleteGroup);
 
