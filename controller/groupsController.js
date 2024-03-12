@@ -14,6 +14,16 @@ const { startSession } = mongoose;
 
 export const createGroup = async (req, res, next) => {
   try {
+    // Überprüfen, ob die E-Mail bereits existiert
+    const { title, text, image, tags, privateGroup } = req.body;
+
+    const existingGroup = await GroupsModel.findOne({ title });
+    if (existingGroup) {
+      return res
+        .status(409)
+        .send({ message: "Group already exists. Please try again." });
+    }
+
     // Überprüfe, ob der JWT-Token im Cookie vorhanden ist
     const token = req.cookies.token;
 
@@ -31,14 +41,12 @@ export const createGroup = async (req, res, next) => {
     // Benutzer-ID des eingeloggten Benutzers
     const creatorId = user._id;
 
-    // Lese die Daten aus dem Anfragekörper
-    const { title, text, image, privateGroup } = req.body;
-
     // Erstelle den News-Eintrag unter Verwendung der Benutzer-ID als Schöpfer
     const group = new groupsSchema({
       title,
       text,
       image,
+      tags,
       admins: [creatorId], // Füge den Ersteller auch als Admin hinzu
       creator: creatorId,
       privateGroup,
@@ -48,7 +56,7 @@ export const createGroup = async (req, res, next) => {
     await group.save();
 
     // Füge die Gruppe auch zu den Benutzergruppen hinzu
-    await UserModell.findByIdAndUpdate(creatorId, {
+    const newUser = await UserModell.findByIdAndUpdate(creatorId, {
       $push: { groups: { groupId: group._id } },
     });
 
@@ -66,7 +74,28 @@ export const createGroup = async (req, res, next) => {
 export const getAllGroups = async (req, res, next) => {
   try {
     const groups = await GroupsModel.find();
-    console.log("groups", groups);
+
+    res.status(200).send(groups);
+  } catch (error) {
+    next(error);
+  }
+};
+
+/******************************************************
+ *    searchGroups
+ ******************************************************/
+
+export const getSearchGroups = async (req, res, next) => {
+  try {
+    const { search } = req.params;
+
+    const groups = await GroupsModel.find({
+      $or: [
+        { title: { $regex: search, $options: "i" } }, // Titel enthält Suchwert (case-insensitive)
+        { text: { $regex: search, $options: "i" } }, // Text enthält Suchwert (case-insensitive)
+      ],
+    });
+
     res.status(200).send(groups);
   } catch (error) {
     next(error);
@@ -194,17 +223,20 @@ export const followGroup = async (req, res) => {
     const userId = req.user.user._id;
     const groupId = req.params.id;
 
+    console.log("FollowGroupController backend löst aus!");
+
     // Überprüfen, ob der Benutzer bereits Mitglied der Gruppe ist
     const group = await GroupsModel.findOne({
       _id: groupId,
       members: userId,
     });
+    console.log("Group in groupsController", userId, groupId);
 
     if (group) {
       return res.status(400).send({ message: "You are already a member." });
     }
 
-    // Transaktionale Operationen
+    // Transaktionale Operationen (erklärung siehe oben //!)
 
     const session = await mongoose.startSession();
     session.startTransaction();
@@ -220,7 +252,11 @@ export const followGroup = async (req, res) => {
       // Gruppe zum Benutzer hinzufügen
       await UserModell.findByIdAndUpdate(
         userId,
-        { $push: { groups: { groupId: groupId } } },
+        {
+          $push: {
+            groups: groupId,
+          },
+        },
         { session }
       );
 
@@ -235,9 +271,10 @@ export const followGroup = async (req, res) => {
       session.endSession();
     }
 
-    return res
-      .status(200)
-      .send({ message: "You have successfully joined the group." });
+    return res.status(200).json({
+      success: true,
+      message: "You have successfully joined the group.",
+    });
   } catch (error) {
     console.error("Error following group:", error);
     return res.status(500).send({ message: "Internal server error" });
