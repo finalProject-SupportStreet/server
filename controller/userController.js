@@ -78,12 +78,7 @@ export const loginController = async (req, res, next) => {
     // Hier das `user`-Objekt  festlegen, bevor es in das JWT eingefügt wird
 
 
-    if (!match) {
-      const error = new Error("Invalid credentials code002");
-      error.statusCode = 401;
-      throw error;
-    }
-
+    
     // Hier das `user`-Objekt  festlegen, bevor es in das JWT eingefügt wird
     const plainUserObj = user.toObject();
     delete plainUserObj.password;
