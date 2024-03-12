@@ -206,25 +206,31 @@ export const deleteUser = async (req, res, next) => {
 };
 
 //done: userSchema erweitern -> geodata: String
-//done: Geodaten sollen in DB/LS gespeichert werden
+//done: Geodaten sollen in DB/LS gespeichert werden 
+
+//todo: filtere alle User mit gleicher PLZ, dann filtere erneut, wer sich in der Umkreissuche befindet (Haversine formula -> calculates distances on geodata). 
 
 
-//todo: filtere alle User mit gleicher PLZ, dann filtere erneut, wer sich in der Umkreissuche befindet (Haversine formula -> calculates distances on geodata).
-
-export const neighbourController = async (req, res, next) => {
+export const neighbourController = async (req,res, next) => {
+    
   try {
+
     const { zip } = req.body;
 
+
     //! 1) user mit gleicher Zip finden:
-    const zipNeighbours = await UserModell.find({ "address.zip": `${zip}` });
+    const zipNeighbours = await UserModell.find({'address.zip': `${zip}`});
     // const zipNeighboursPlainObj = zipNeighbours.toObject();
     if (!zipNeighbours[0].address[0].zip === zip) {
-      res.send("No neighbours found in this zipcode area.");
-    }
+      res.send('No neighbours found in this zipcode area.')
+    };
+    
+    res.send({zipNeighbours});
 
-    res.send({ zipNeighbours });
 
     //! 2) User im Umkreis (variabel) finden:
+
+
   } catch (err) {
     console.log(err);
   }
