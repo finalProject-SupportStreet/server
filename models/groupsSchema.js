@@ -7,25 +7,25 @@ const groupPostSchema = new Schema({
   image: { type: String },
   tags: { type: String, required: true },
   privateGroup: { type: Boolean, default: false },
-  members: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
-  mods: [{ type: Schema.Types.ObjectId, ref: "User" }],
-  admins: [{ type: Schema.Types.ObjectId, ref: "User" }],
+  members: [{ type: mongoose.Schema.Types.ObjectId, ref: "users" }],
+  mods: [{ type: Schema.Types.ObjectId, ref: "users" }],
+  admins: [{ type: Schema.Types.ObjectId, ref: "users" }],
   creator: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
+    ref: "users",
     required: true,
   },
   creationTime: {
     type: Date,
     default: Date.now,
   },
-  likes: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+  likes: [{ type: mongoose.Schema.Types.ObjectId, ref: "users" }],
   comments: [
     {
       text: { type: String, required: true },
       commenter: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
+        ref: "users",
         required: true,
       },
       commentTime: { type: Date, default: Date.now },
@@ -33,5 +33,5 @@ const groupPostSchema = new Schema({
   ],
 });
 
-const GroupsModel = model("GroupPost", groupPostSchema, "groups");
+const GroupsModel = model("groups", groupPostSchema);
 export default GroupsModel;

@@ -64,14 +64,19 @@ export const registerController = async (req, res) => {
 export const loginController = async (req, res, next) => {
   try {
     const { email, password } = req.body;
-    const user = await UserModell.findOne({ email });
+    const user = await UserModell.findOne({ email }).populate("groups");
+    //const user = await UserModell.findOne({ email });
+
+    console.log("populate test", user);
+
     if (!user) {
       const error = new Error("Invalid credentials code001");
       error.statusCode = 401;
       throw error;
     }
 
-    const match = await bcrypt.compare(password, user.password);
+    // Hier das `user`-Objekt  festlegen, bevor es in das JWT eingefügt wird
+
 
     if (!match) {
       const error = new Error("Invalid credentials code002");
@@ -83,6 +88,7 @@ export const loginController = async (req, res, next) => {
     const plainUserObj = user.toObject();
     delete plainUserObj.password;
     const userForJwt = plainUserObj;
+
 
     // Generiere ein JWT mit dem `userForJwt`-Objekt als Payload
     const accessToken = jwt.sign({ user: userForJwt }, process.env.JWT_SECRET);
@@ -201,6 +207,7 @@ export const deleteUser = async (req, res, next) => {
 
 //done: userSchema erweitern -> geodata: String
 //done: Geodaten sollen in DB/LS gespeichert werden
+
 
 //todo: filtere alle User mit gleicher PLZ, dann filtere erneut, wer sich in der Umkreissuche befindet (Haversine formula -> calculates distances on geodata).
 
