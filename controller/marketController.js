@@ -7,10 +7,10 @@ import UserModell from "../models/userSchema.js";
  ******************************************************/
 
 export const createMarketItem = async (req, res, next) => {
+
   try {
     // Überprüfe, ob der JWT-Token im Cookie vorhanden ist
     const token = req.cookies.token;
-
     if (!token) {
       const error = new Error(
         "Authorization failed: JWT token not found in cookie"
@@ -18,34 +18,28 @@ export const createMarketItem = async (req, res, next) => {
       error.statusCode = 401;
       throw error;
     }
-    // Extrahiere den Benutzer aus dem JWT-Token
+
     const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
     const user = decodedToken.user;
 
-    // Benutzer-ID des eingeloggten Benutzers
     const creatorId = user._id;
 
-    // Lese die Daten aus dem Anfragekörper
-    const { free, title, text, price, image, tags, follow, city, zip, street } =
-      req.body;
+    const { title, description, price, image, tags, zip, bookmarked, offerType } = req.body;
 
-    // Erstelle den Market-Eintrag unter Verwendung der Benutzer-ID als Schöpfer
-    const marketItem = new MarketModel({
-      free,
+      const marketItem = new MarketModel({
       title,
-      text,
+      description,
       price,
       image,
       tags,
-      follow,
-      creator: creatorId,
-      city,
       zip,
-      street,
+      bookmarked,
+      offerType,
+      creator: creatorId,
     });
 
     console.log("marketItem im marketController", marketItem);
-    // Speichere den Market-Eintrag in der Datenbank
+    
     await marketItem.save();
 
     // Füge das marketItem auch zu den User hinzu
@@ -59,6 +53,7 @@ export const createMarketItem = async (req, res, next) => {
     next(error);
   }
 };
+
 
 /******************************************************
  *    getAllMarketItems (zum testen - falls nicht benötigt, löschen)
@@ -95,7 +90,7 @@ export const getMarketItemByZip = async (req, res, next) => {
 export const editMarketItem = async (req, res, next) => {
   try {
     const marketItemId = req.params.id;
-    const { free, title, text, price, image, tags, follow, city, zip, street } =
+    const { free, title, description, price, image, tags, bookmarked, zip } =
       req.body;
 
     const userId = req.user.user._id;
@@ -115,14 +110,14 @@ export const editMarketItem = async (req, res, next) => {
     // Aktualisiere das Market-Item
     marketItem.free = free || marketItem.free;
     marketItem.title = title || marketItem.title;
-    marketItem.text = text || marketItem.text;
+    marketItem.text = description || marketItem.text;
     marketItem.price = price || marketItem.price;
     marketItem.image = image || marketItem.image;
     marketItem.tags = tags || marketItem.tags;
-    marketItem.follow = follow || marketItem.follow;
-    marketItem.city = city || marketItem.city;
     marketItem.zip = zip || marketItem.zip;
-    marketItem.street = street || marketItem.street;
+    marketItem.bookmarked = bookmarked || marketItem.bookmarked;
+    // marketItem.city = city || marketItem.city;
+    // marketItem.street = street || marketItem.street;
 
     await marketItem.save();
 

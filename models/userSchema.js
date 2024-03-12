@@ -14,7 +14,7 @@ const userSchema = new Schema({
       number: { type: String, required: true },
     },
   ],
-  geoCode: [ String ], //* neu hinzugefügt!!!
+  geoCode: [ String ], 
   gender: { type: String },
   blockedUsers: [
     {
