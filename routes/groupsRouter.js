@@ -10,16 +10,18 @@ import {
   followGroup,
   unfollowGroup,
   deleteGroup,
+  getSearchGroups,
 } from "../controller/groupsController.js";
 
 const groupsRouter = express.Router();
 
-groupsRouter.get("/getAllGroups", getAllGroups); // zum testen - später löschen falls nicht gebraucht
+groupsRouter.get("/getAllGroups", getAllGroups);
 groupsRouter.get("/getFollowedGroups", authorizeUser, getFollowedGroups);
 groupsRouter.get("/getFollowedGroups/:id", getFollowedGroupByUserId);
+groupsRouter.get("/getSearchGroups/:search", authorizeUser, getSearchGroups);
 groupsRouter.post("/createGroup", authorizeUser, createGroup);
-groupsRouter.patch("/editGroup/:id", authorizeUser, editGroup);
 groupsRouter.post("/followGroup/:id", authorizeUser, followGroup);
+groupsRouter.patch("/editGroup/:id", authorizeUser, editGroup);
 groupsRouter.delete("/unfollowGroup/:id", authorizeUser, unfollowGroup);
 groupsRouter.delete("/deleteGroup/:id", authorizeUser, deleteGroup);
 
