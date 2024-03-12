@@ -14,27 +14,20 @@ const userSchema = new Schema({
       number: { type: String, required: true },
     },
   ],
-  geoCode: [ String ], //* neu hinzugefügt!!!
+  geoCode: [String], //* neu hinzugefügt!!!
   gender: { type: String },
-  blockedUsers: [
-    {
-      id: { type: Schema.Types.ObjectId, ref: "User" },
-    },
-  ],
-  followUsers: [
-    {
-      id: { type: Schema.Types.ObjectId, ref: "User" },
-    },
-  ],
+  blockedUsers: [{ type: Schema.Types.ObjectId, ref: "users" }],
+  followUsers: [{ type: Schema.Types.ObjectId, ref: "users" }],
   groups: [
     {
-      groupName: { type: String },
-      groupId: { type: Schema.Types.ObjectId, ref: "Group" },
+      type: Schema.Types.ObjectId, //das ist die ID
+      ref: "groups",
     },
   ],
   marketItems: [
     {
-      itemId: { type: Schema.Types.ObjectId, ref: "MarketItem" },
+      type: Schema.Types.ObjectId,
+      ref: "MarketItem",
     },
   ],
   interests: [{ type: String }],
@@ -51,5 +44,5 @@ const userSchema = new Schema({
   organizing: [{ type: String }],
 });
 
-const UserModell = model("User", userSchema, "users");
+const UserModell = model("users", userSchema);
 export default UserModell;
