@@ -27,24 +27,27 @@ export const createMarketItem = async (req, res, next) => {
     const { title, description, price, image, tags, zip, bookmarked, offerType } = req.body;
 
       const marketItem = new MarketModel({
-      title,
-      description,
-      price,
-      image,
-      tags,
-      zip,
-      bookmarked,
-      offerType,
-      creator: creatorId,
-    });
+        title,
+        description,
+        price,
+        image,
+        tags,
+        zip,
+        bookmarked,
+        offerType,
+        creator: creatorId,
+      });
 
     console.log("marketItem im marketController", marketItem);
     
-    await marketItem.save();
+
+    const marketItemFromDB = await marketItem.save();
+    console.log(marketItemFromDB);
+    // console.log(marketItem._id);
 
     // Füge das marketItem auch zu den User hinzu
     await UserModell.findByIdAndUpdate(creatorId, {
-      $push: { marketItems: { itemId: marketItem._id } },
+      $push: { marketItems:  marketItem._id  },
     });
 
     // Sende eine Erfolgsantwort zurück
