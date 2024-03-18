@@ -18,6 +18,7 @@ export const createGroup = async (req, res, next) => {
     const { title, text, image, tags, privateGroup } = req.body;
 
     const existingGroup = await GroupsModel.findOne({ title });
+
     if (existingGroup) {
       return res
         .status(409)
@@ -56,8 +57,8 @@ export const createGroup = async (req, res, next) => {
     await group.save();
 
     // Füge die Gruppe auch zu den Benutzergruppen hinzu
-    const newUser = await UserModell.findByIdAndUpdate(creatorId, {
-      $push: { groups: { groupId: group._id } },
+    await UserModell.findByIdAndUpdate(creatorId, {
+      $push: { groups: group._id },
     });
 
     // Sende eine Erfolgsantwort zurück
@@ -73,7 +74,10 @@ export const createGroup = async (req, res, next) => {
 
 export const getAllGroups = async (req, res, next) => {
   try {
-    const groups = await GroupsModel.find();
+    const groups = await GroupsModel.find()
+      .populate("admins", "firstName lastName ")
+      .populate("members", "firstName lastName ")
+      .populate("mods", "firstName lastName");
 
     res.status(200).send(groups);
   } catch (error) {
@@ -146,7 +150,7 @@ export const getFollowedGroupByUserId = async (req, res) => {
     if (!user) {
       return res.status(404).send({ message: "User not found" });
     }
-
+    console.log("userLog", user);
     // extrahiere die Gruppen-IDs aus dem User-Objekt
     const followedGroupIds = user.groups.map((group) => group.groupId);
 
@@ -241,6 +245,11 @@ export const followGroup = async (req, res) => {
     const session = await mongoose.startSession();
     session.startTransaction();
 
+    // ~ .populate Beispiel
+    // im userController muss der user auch noch .populate bekommen
+    // Muss außerhalb der Session für populate definiert sein sein
+    let updatedUser = {};
+
     try {
       // Benutzer zur Gruppe hinzufügen
       await GroupsModel.findByIdAndUpdate(
@@ -250,16 +259,17 @@ export const followGroup = async (req, res) => {
       );
 
       // Gruppe zum Benutzer hinzufügen
-      await UserModell.findByIdAndUpdate(
+      updatedUser = await UserModell.findByIdAndUpdate(
         userId,
         {
           $push: {
             groups: groupId,
           },
         },
-        { session }
-      );
 
+        { session, new: true }
+      ).populate("groups");
+      console.log({ updatedUser });
       // Transaktion abschließen
       await session.commitTransaction();
     } catch (error) {
@@ -269,12 +279,8 @@ export const followGroup = async (req, res) => {
     } finally {
       // Transaktionssitzung beenden
       session.endSession();
+      return res.status(200).send(updatedUser);
     }
-
-    return res.status(200).json({
-      success: true,
-      message: "You have successfully joined the group.",
-    });
   } catch (error) {
     console.error("Error following group:", error);
     return res.status(500).send({ message: "Internal server error" });
@@ -320,6 +326,10 @@ export const unfollowGroup = async (req, res) => {
     return res.status(500).send({ message: "Internal server error." });
   }
 };
+
+/******************************************************
+ *   createGroupPost
+ ******************************************************/
 
 /******************************************************
  *   deleteGroup (löscht Gruppe - NUR ADMIN)

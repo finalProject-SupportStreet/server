@@ -20,15 +20,17 @@ const groupPostSchema = new Schema({
     default: Date.now,
   },
   likes: [{ type: mongoose.Schema.Types.ObjectId, ref: "users" }],
-  comments: [
+  groupPosts: [
     {
-      text: { type: String, required: true },
+      heading: { type: String, required: true },
+      message: { type: String, required: true },
+      topic: { type: String, required: true },
       commenter: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "users",
         required: true,
       },
-      commentTime: { type: Date, default: Date.now },
+      postTime: { type: Date, default: Date.now },
     },
   ],
 });
