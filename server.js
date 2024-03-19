@@ -8,9 +8,10 @@ import userRouter from "./routes/userRouter.js";
 import newsRouter from "./routes/newsRouter.js";
 import groupsRouter from "./routes/groupsRouter.js";
 import marketRouter from "./routes/marketRouter.js";
+import dotenv from "dotenv";
 
 //import userRouter from "./routes/user.js";
-
+dotenv.config();
 const app = express();
 
 /******************************************************
@@ -42,7 +43,7 @@ app.use(
 
 app.use(morgan("dev"));
 app.use(cookieParser());
-app.use(express.json());
+app.use(express.json({ limit: "1mb" }));
 
 /******************************************************
  * API

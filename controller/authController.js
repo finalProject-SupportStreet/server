@@ -40,7 +40,7 @@ export const authenticateUser = async (req, res, next) => {
 export const authorizeUser = (req, res, next) => {
   // 1. wir nehmen den jwt aus dem Request
   const token = req.cookies.token;
-  console.log("token authorizeUser from cookie", token);
+
   // 2. Wenn es keinen token gibt, senden wir einen fehler zurück
   if (!token) return res.send("no cookie found. you are not authorized.");
   // 3. wenn es einen token gibt, versuchen wir ihn zu verifizieren
