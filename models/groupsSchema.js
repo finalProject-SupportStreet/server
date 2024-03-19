@@ -22,9 +22,10 @@ const groupPostSchema = new Schema({
   likes: [{ type: mongoose.Schema.Types.ObjectId, ref: "users" }],
   groupPosts: [
     {
-      heading: { type: String, required: true },
-      message: { type: String, required: true },
+      title: { type: String, required: true },
+      text: { type: String, required: true },
       topic: { type: String, required: true },
+      image: { type: String },
       commenter: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "users",
