@@ -10,10 +10,10 @@ const marketSchema = new Schema({
   tags: [{ type: String, required: true }], // Kategorien
   zip: {type: String, required: true},
   offerType: { type: String }, //~ Verkaufen, Verschenken
-  bookmarked: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }], // List von Benutzer-IDs, die dem Artikel folgen
+  bookmarked: [{ type: mongoose.Schema.Types.ObjectId, ref: "users" }], // List von Benutzer-IDs, die dem Artikel folgen
   creator: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
+    ref: "users",
     required: true,
   },
   creationTime: {
@@ -22,6 +22,6 @@ const marketSchema = new Schema({
   }
 });
 
-const MarketModel = model("Market", marketSchema, "market");
+const MarketModel = model("markets", marketSchema);
 
 export default MarketModel;
