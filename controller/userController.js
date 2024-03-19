@@ -78,6 +78,7 @@ export const loginController = async (req, res, next) => {
     // Hier das `user`-Objekt  festlegen, bevor es in das JWT eingefügt wird
 
 
+
     // Hier das `user`-Objekt  festlegen, bevor es in das JWT eingefügt wird
     const plainUserObj = user.toObject();
     delete plainUserObj.password;

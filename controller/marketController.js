@@ -27,6 +27,7 @@ export const createMarketItem = async (req, res, next) => {
     const { title, description, price, image, tags, zip, bookmarked, offerType } = req.body;
 
       const marketItem = new MarketModel({
+
         title,
         description,
         price,
@@ -44,6 +45,7 @@ export const createMarketItem = async (req, res, next) => {
     const marketItemFromDB = await marketItem.save();
     console.log(marketItemFromDB);
     // console.log(marketItem._id);
+
 
     // Füge das marketItem auch zu den User hinzu
     await UserModell.findByIdAndUpdate(creatorId, {
