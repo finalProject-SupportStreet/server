@@ -74,6 +74,7 @@ export const loginController = async (req, res, next) => {
     }
 
     // mongoose obj zu js Objekt konvertieren
+
     const plainUserObj = user.toObject();
     delete plainUserObj.password;
     delete plainUserObj.groups;

@@ -27,7 +27,7 @@ const userSchema = new Schema({
   marketItems: [
     {
       type: Schema.Types.ObjectId,
-      ref: "MarketItem",
+      ref: "markets",
     },
   ],
   interests: [{ type: String }],

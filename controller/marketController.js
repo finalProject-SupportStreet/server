@@ -48,13 +48,16 @@ export const createMarketItem = async (req, res, next) => {
 
     console.log("marketItem im marketController", marketItem);
 
+
     const marketItemFromDB = await marketItem.save();
     console.log(marketItemFromDB);
     // console.log(marketItem._id);
 
+
     // Füge das marketItem auch zu den User hinzu
     await UserModell.findByIdAndUpdate(creatorId, {
       $push: { marketItems: marketItem._id },
+
     });
 
     // Sende eine Erfolgsantwort zurück
