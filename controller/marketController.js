@@ -7,7 +7,6 @@ import UserModell from "../models/userSchema.js";
  ******************************************************/
 
 export const createMarketItem = async (req, res, next) => {
-
   try {
     // Überprüfe, ob der JWT-Token im Cookie vorhanden ist
     const token = req.cookies.token;
@@ -24,23 +23,31 @@ export const createMarketItem = async (req, res, next) => {
 
     const creatorId = user._id;
 
-    const { title, description, price, image, tags, zip, bookmarked, offerType } = req.body;
+    const {
+      title,
+      description,
+      price,
+      image,
+      tags,
+      zip,
+      bookmarked,
+      offerType,
+    } = req.body;
 
-      const marketItem = new MarketModel({
-
-        title,
-        description,
-        price,
-        image,
-        tags,
-        zip,
-        bookmarked,
-        offerType,
-        creator: creatorId,
-      });
+    const marketItem = new MarketModel({
+      title,
+      description,
+      price,
+      image,
+      tags,
+      zip,
+      bookmarked,
+      offerType,
+      creator: creatorId,
+    });
 
     console.log("marketItem im marketController", marketItem);
-    
+
 
     const marketItemFromDB = await marketItem.save();
     console.log(marketItemFromDB);
@@ -49,7 +56,8 @@ export const createMarketItem = async (req, res, next) => {
 
     // Füge das marketItem auch zu den User hinzu
     await UserModell.findByIdAndUpdate(creatorId, {
-      $push: { marketItems:  marketItem._id  },
+      $push: { marketItems: marketItem._id },
+
     });
 
     // Sende eine Erfolgsantwort zurück
@@ -58,7 +66,6 @@ export const createMarketItem = async (req, res, next) => {
     next(error);
   }
 };
-
 
 /******************************************************
  *    getAllMarketItems (zum testen - falls nicht benötigt, löschen)

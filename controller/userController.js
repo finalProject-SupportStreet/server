@@ -67,28 +67,29 @@ export const loginController = async (req, res, next) => {
     const user = await UserModell.findOne({ email }).populate("groups");
     //const user = await UserModell.findOne({ email });
 
-    console.log("populate test", user);
-
     if (!user) {
       const error = new Error("Invalid credentials code001");
       error.statusCode = 401;
       throw error;
     }
 
-    // Hier das `user`-Objekt  festlegen, bevor es in das JWT eingefügt wird
+    // mongoose obj zu js Objekt konvertieren
 
-
-
-    // Hier das `user`-Objekt  festlegen, bevor es in das JWT eingefügt wird
     const plainUserObj = user.toObject();
     delete plainUserObj.password;
-    const userForJwt = plainUserObj;
+    delete plainUserObj.groups;
+    delete plainUserObj.marketItems;
 
+    // Nur PW gelöscht -> frontend userDaten
+    const userObjOPW = user.toObject();
+    delete userObjOPW.password;
+
+    // kleines Obj für den JWT Token (im Cookie)
+    const userForJwt = plainUserObj;
 
     // Generiere ein JWT mit dem `userForJwt`-Objekt als Payload
     const accessToken = jwt.sign({ user: userForJwt }, process.env.JWT_SECRET);
 
-    console.log(accessToken);
     // 2. sende es als cookie zurück an den client
     res
       .cookie("token", accessToken, {
@@ -98,7 +99,7 @@ export const loginController = async (req, res, next) => {
         sameSite: process.env.NODE_ENV === "production" ? "None" : "lax",
       })
 
-      .send({ user: plainUserObj });
+      .send({ user: userObjOPW });
   } catch (error) {
     next(error);
   }
@@ -201,31 +202,24 @@ export const deleteUser = async (req, res, next) => {
 };
 
 //done: userSchema erweitern -> geodata: String
-//done: Geodaten sollen in DB/LS gespeichert werden 
+//done: Geodaten sollen in DB/LS gespeichert werden
 
-//todo: filtere alle User mit gleicher PLZ, dann filtere erneut, wer sich in der Umkreissuche befindet (Haversine formula -> calculates distances on geodata). 
+//todo: filtere alle User mit gleicher PLZ, dann filtere erneut, wer sich in der Umkreissuche befindet (Haversine formula -> calculates distances on geodata).
 
-
-export const neighbourController = async (req,res, next) => {
-    
+export const neighbourController = async (req, res, next) => {
   try {
-
     const { zip } = req.body;
 
-
     //! 1) user mit gleicher Zip finden:
-    const zipNeighbours = await UserModell.find({'address.zip': `${zip}`});
+    const zipNeighbours = await UserModell.find({ "address.zip": `${zip}` });
     // const zipNeighboursPlainObj = zipNeighbours.toObject();
     if (!zipNeighbours[0].address[0].zip === zip) {
-      res.send('No neighbours found in this zipcode area.')
-    };
-    
-    res.send({zipNeighbours});
+      res.send("No neighbours found in this zipcode area.");
+    }
 
+    res.send({ zipNeighbours });
 
     //! 2) User im Umkreis (variabel) finden:
-
-
   } catch (err) {
     console.log(err);
   }
