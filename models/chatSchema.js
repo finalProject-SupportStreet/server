@@ -4,16 +4,28 @@ import mongoose from 'mongoose';
 const chatSchema = new mongoose.Schema({
   // alles was user betrifft, aus localStorage holen...
   user: {type: String},
-  // woher kommt die?
+  //! woher kommt die Id vom Chatpartner ?
   chatPartnerId : {type: String, required: true},
   myMessages: {type: String},
-  otherMessages: [ String ]
+  otherMessages: [
+    {
+      chatPartner: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'users',
+        required: true
+      },
+      messages: [String]
+    }
+  ]
+});
 
-})
+const Chat = mongoose.model('chats', chatSchema);
+
+export default Chat;
 
 
 /* 
-
+//* Beispiel wie es aussehen soll
 otherMessages: [
   {
     userId: '15158852855885222',
