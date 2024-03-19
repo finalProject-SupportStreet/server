@@ -2,11 +2,18 @@ import jwt from "jsonwebtoken";
 import groupsSchema from "../models/groupsSchema.js";
 import GroupsModel from "../models/groupsSchema.js";
 import UserModell from "../models/userSchema.js";
+import { v2 as cloudinary } from "cloudinary";
 
 import mongoose from "mongoose";
 const { startSession } = mongoose;
 
 //! Man muss angemeldet sein, um eine Gruppe zu erstellen, bearbeiten, löschen ...
+
+cloudinary.config({
+  cloud_name: process.env.CLOUD_NAME,
+  api_key: process.env.API_KEY,
+  api_secret: process.env.API_SECRET,
+});
 
 /******************************************************
  *    createGroups
@@ -42,11 +49,20 @@ export const createGroup = async (req, res, next) => {
     // Benutzer-ID des eingeloggten Benutzers
     const creatorId = user._id;
 
+    //! Cloudinary
+    // um uploadgröße zu limitieren in server js "app.use(express.json({ limit: "1mb" }));
+    let imgURL = "";
+    if (image) {
+      const cloudinaryRes = await cloudinary.uploader.upload(image);
+      imgURL = cloudinaryRes.secure_url;
+      console.log("Backend Cloudinary", imgURL);
+    }
+
     // Erstelle den News-Eintrag unter Verwendung der Benutzer-ID als Schöpfer
     const group = new groupsSchema({
       title,
       text,
-      image,
+      image: imgURL,
       tags,
       admins: [creatorId], // Füge den Ersteller auch als Admin hinzu
       creator: creatorId,
