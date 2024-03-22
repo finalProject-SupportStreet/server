@@ -75,6 +75,9 @@ export const loginController = async (req, res, next) => {
 
     // mongoose obj zu js Objekt konvertieren
 
+    // Hier das `user`-Objekt  festlegen, bevor es in das JWT eingefügt wird
+
+    // Hier das `user`-Objekt  festlegen, bevor es in das JWT eingefügt wird
     const plainUserObj = user.toObject();
     delete plainUserObj.password;
     delete plainUserObj.groups;
@@ -123,62 +126,44 @@ export const logoutController = async (req, res) => {
 //! so kann nutzer sowie admin den controller verwenden
 
 export const editUser = async (req, res, next) => {
+  // "extrahiere" Adressdaten jeweils in eine Variable und den rest in ein "rest" Object
+  const { street, number, zip, ...rest } = req.body;
+
+  // Kopiere das rest Object in structureObj(=> das Object, das am Ende der DB übergeben werden soll)
+  const structuredObj = { ...rest };
+
+  // Füge nur Adress-Angaben hinzu, die einen Wert haben
+
+  if (street) structuredObj["address.0.street"] = street;
+  if (number) structuredObj["address.0.number"] = number;
+  if (zip) structuredObj["address.0.zip"] = zip;
+
+
+  // Null bedeutet löschen
+  if (street === null) structuredObj["address.0.street"] = "";
+  if (number === null) structuredObj["address.0.number"] = "";
+  if (zip === null) structuredObj["address.0.zip"] = "";
+
+  // console.log("structuredObj", structuredObj);
+
   try {
     const userId = req.params.id;
-    console.log("userId", userId);
+    // console.log("body:", req.body);
+    const options = { new: true };
 
-    const user = await UserModell.findById(userId);
+    const user = await UserModell.findByIdAndUpdate(
+      userId,
+      { $set: structuredObj },
+      options
+    );
+    // console.log(user, userId);
+
+    // console.log("user nach findeIDAndUpdate", user);
     if (!user) {
       const error = new Error("User not found");
       error.statusCode = 404;
       throw error;
     }
-
-    const {
-      email,
-      plz,
-      password,
-      firstName,
-      lastName,
-      gender,
-      birthday,
-      comeFrom,
-      familyStatus,
-      children,
-      pet,
-      job,
-      aboutMe,
-      interests,
-      offers,
-      activities,
-      organizing,
-      address,
-    } = req.body;
-
-    // Prüfe, ob ein Feld im Anfragekörper vorhanden ist und aktualisiere den Benutzer entsprechend
-    if (email) user.email = email;
-    if (plz) user.address[0].plz = plz;
-    if (password) user.password = password;
-    if (firstName) user.firstName = firstName;
-    if (lastName) user.lastName = lastName;
-    if (gender) user.gender = gender;
-    if (birthday) user.birthday = birthday;
-    if (comeFrom) user.comeFrom = comeFrom;
-    if (familyStatus) user.familyStatus = familyStatus;
-    if (children) user.children = children;
-    if (pet) user.pet = pet;
-    if (job) user.job = job;
-    if (aboutMe) user.aboutMe = aboutMe;
-    if (interests) user.interests = interests;
-    if (offers) user.offers = offers;
-    if (activities) user.activities = activities;
-    if (organizing) user.organizing = organizing;
-    if (address) {
-      user.address = address; // Aktualisiere die Adresse
-    }
-
-    //! save ist veraltet -> create verwenden
-    await user.save();
 
     res.status(200).send({ message: "User successfully edited", user });
   } catch (error) {

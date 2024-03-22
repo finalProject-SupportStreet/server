@@ -22,7 +22,7 @@ userRouter.post("/neighbours", neighbourController);
 userRouter.post("/register", registerController);
 userRouter.post("/login", authenticateUser, loginController);
 userRouter.post("/logout", logoutController);
-userRouter.patch("/edit/:id", authorizeUser, editUser);
+userRouter.patch("/edit/:id", editUser);
 userRouter.delete("/:id", authorizeUser, deleteUser);
 
 export default userRouter;
