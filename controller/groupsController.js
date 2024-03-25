@@ -25,8 +25,8 @@ export const createGroup = async (req, res, next) => {
     const { title, text, image, tags, privateGroup } = req.body;
 
     const existingGroup = await GroupsModel.findOne({ title });
-
-    if (existingGroup) {
+    console.log("existing groups :", existingGroup);
+    if (existingGroup !== null) {
       return res
         .status(409)
         .send({ message: "Group already exists. Please try again." });
@@ -346,6 +346,56 @@ export const unfollowGroup = async (req, res) => {
 /******************************************************
  *   createGroupPost
  ******************************************************/
+//! Checken ob der GroupsRouter createGroupPost richtig angeschlossen ist
+
+export const createGroupPost = async (req, res, next) => {
+  const groupId = req.params.id; // Stelle sicher, dass du groupId in der Route definiert hast
+  console.log(groupId);
+  const { title, text, topic, image } = req.body; // Annahme, dass diese Daten vom Client kommen
+  console.log(req.body);
+  try {
+    // Authentifizierung und Autorisierung (wie bereits in deinem Code)
+    const token = req.cookies.token;
+    if (!token) {
+      const error = new Error(
+        "Authorization failed: JWT token not found in cookie"
+      );
+      error.statusCode = 401;
+      throw error;
+    }
+    const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+    const user = decodedToken.user;
+    const creatorId = user._id;
+    console.log(user);
+    console.log(creatorId);
+    // Finde die Gruppe anhand ihrer ID und füge den neuen Beitrag hinzu
+    const group = await GroupsModel.findById(groupId);
+    if (!group) {
+      return res.status(404).send({ message: "Gruppe nicht gefunden." });
+    }
+
+    // Erstelle ein neues Post-Objekt für groupPosts
+    const newPost = {
+      title,
+      text,
+      topic,
+      image, // das Bild später hinzufügen
+      commenter: creatorId, // Ersteller des Beitrags
+      postTime: new Date(), // Erstellungsdatum speichern
+    };
+    console.log("createGroupPost newPost kurz vorm Senden", newPost);
+    // Füge den neuen Beitrag zu groupPosts hinzu und speichere die Gruppe
+    group.groupPosts.push(newPost);
+    await group.save();
+
+    // Sende eine Erfolgsantwort zurück
+    res
+      .status(201)
+      .send({ message: "Beitrag erfolgreich erstellt.", post: newPost });
+  } catch (error) {
+    next(error);
+  }
+};
 
 /******************************************************
  *   deleteGroup (löscht Gruppe - NUR ADMIN)

@@ -77,7 +77,6 @@ export const loginController = async (req, res, next) => {
 
     // Hier das `user`-Objekt  festlegen, bevor es in das JWT eingefügt wird
 
-    // Hier das `user`-Objekt  festlegen, bevor es in das JWT eingefügt wird
     const plainUserObj = user.toObject();
     delete plainUserObj.password;
     delete plainUserObj.groups;
@@ -138,7 +137,6 @@ export const editUser = async (req, res, next) => {
   if (number) structuredObj["address.0.number"] = number;
   if (zip) structuredObj["address.0.zip"] = zip;
 
-
   // Null bedeutet löschen
   if (street === null) structuredObj["address.0.street"] = "";
   if (number === null) structuredObj["address.0.number"] = "";
@@ -150,6 +148,7 @@ export const editUser = async (req, res, next) => {
     const userId = req.params.id;
     // console.log("body:", req.body);
     const options = { new: true };
+
 
     const user = await UserModell.findByIdAndUpdate(
       userId,
