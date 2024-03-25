@@ -1,6 +1,7 @@
 import jwt from "jsonwebtoken";
 import MarketModel from "../models/marketSchema.js";
 import UserModell from "../models/userSchema.js";
+import { v2 as cloudinary } from "cloudinary";
 
 /******************************************************
  *    createMarketItem
@@ -8,6 +9,17 @@ import UserModell from "../models/userSchema.js";
 
 export const createMarketItem = async (req, res, next) => {
   try {
+    const {
+      title,
+      description,
+      price,
+      image,
+      tags,
+      zip,
+      bookmarked,
+      offerType,
+    } = req.body;
+
     // Überprüfe, ob der JWT-Token im Cookie vorhanden ist
     const token = req.cookies.token;
     if (!token) {
@@ -23,22 +35,20 @@ export const createMarketItem = async (req, res, next) => {
 
     const creatorId = user._id;
 
-    const {
-      title,
-      description,
-      price,
-      image,
-      tags,
-      zip,
-      bookmarked,
-      offerType,
-    } = req.body;
+    //! Cloudinary
+    // um uploadgröße zu limitieren in server js "app.use(express.json({ limit: "1mb" }));
+    let imgURL = "";
+    if (image) {
+      const cloudinaryRes = await cloudinary.uploader.upload(image);
+      imgURL = cloudinaryRes.secure_url;
+      console.log("Backend Cloudinary", imgURL);
+    }
 
     const marketItem = new MarketModel({
       title,
       description,
       price,
-      image,
+      image: imgURL,
       tags,
       zip,
       bookmarked,
@@ -72,6 +82,20 @@ export const getAllMarketItems = async (req, res, next) => {
   try {
     const marketItems = await MarketModel.find();
     console.log("marketItems", marketItems);
+    res.status(200).send(marketItems);
+  } catch (error) {
+    next(error);
+  }
+};
+
+/******************************************************
+ *    getMarketItemByName
+ ******************************************************/
+
+export const getMarketItemByName = async (req, res, next) => {
+  try {
+    const searchParameter = req.params.searchParameter;
+    const marketItems = await MarketModel.find({ title: searchParameter });
     res.status(200).send(marketItems);
   } catch (error) {
     next(error);

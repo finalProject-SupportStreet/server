@@ -25,8 +25,8 @@ export const createGroup = async (req, res, next) => {
     const { title, text, image, tags, privateGroup } = req.body;
 
     const existingGroup = await GroupsModel.findOne({ title });
-
-    if (existingGroup) {
+    console.log("existing groups :", existingGroup);
+    if (existingGroup !== null) {
       return res
         .status(409)
         .send({ message: "Group already exists. Please try again." });
