@@ -74,6 +74,9 @@ export const loginController = async (req, res, next) => {
     }
 
     // mongoose obj zu js Objekt konvertieren
+
+    // Hier das `user`-Objekt  festlegen, bevor es in das JWT eingefügt wird
+
     const plainUserObj = user.toObject();
     delete plainUserObj.password;
     delete plainUserObj.groups;
@@ -145,6 +148,7 @@ export const editUser = async (req, res, next) => {
     const userId = req.params.id;
     // console.log("body:", req.body);
     const options = { new: true };
+
 
     const user = await UserModell.findByIdAndUpdate(
       userId,
